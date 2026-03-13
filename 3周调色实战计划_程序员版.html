@@ -1,0 +1,267 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.wrap { padding: 1rem 0; font-family: var(--font-sans); }
+.tabs { display: flex; gap: 8px; margin-bottom: 18px; }
+.tab { padding: 8px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-secondary); font-size: 13px; cursor: pointer; transition: all .15s; }
+.tab.active { color: #fff; font-weight: 500; border-color: transparent; }
+.t1.active { background: #185FA5; }
+.t2.active { background: #3B6D11; }
+.t3.active { background: #854F0B; }
+.phase-panel { display: none; }
+.phase-panel.active { display: block; }
+.ph-head { border-radius: var(--border-radius-lg); padding: 14px 18px; margin-bottom: 14px; }
+.ph-head h2 { font-size: 16px; font-weight: 500; color: #fff; margin-bottom: 3px; }
+.ph-head p { font-size: 12px; color: rgba(255,255,255,.78); }
+.h1 { background: #185FA5; }
+.h2 { background: #3B6D11; }
+.h3 { background: #854F0B; }
+.days { display: flex; flex-direction: column; gap: 7px; }
+.dc { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); overflow: hidden; }
+.dc-top { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
+.dc-top:hover { background: var(--color-background-secondary); }
+.badge { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; }
+.bd1 { background: #E6F1FB; color: #185FA5; }
+.bd2 { background: #EAF3DE; color: #3B6D11; }
+.bd3 { background: #FAEEDA; color: #854F0B; }
+.dc-info { flex: 1; }
+.dc-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.dc-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.chev { font-size: 10px; color: var(--color-text-tertiary); transition: transform .18s; }
+.dc.open .chev { transform: rotate(90deg); }
+.dc-body { display: none; padding: 0 14px 14px; border-top: 0.5px solid var(--color-border-tertiary); }
+.dc.open .dc-body { display: block; }
+.row { display: flex; gap: 8px; margin-top: 10px; align-items: flex-start; }
+.lbl { font-size: 11px; font-weight: 500; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: .05em; min-width: 40px; padding-top: 1px; flex-shrink: 0; }
+.val { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; }
+.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 20px; margin-right: 4px; margin-top: 3px; }
+.tag-out { background: var(--color-background-warning); color: var(--color-text-warning); }
+.tag-tool { background: var(--color-background-secondary); color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); }
+.tag-tip { background: var(--color-background-info); color: var(--color-text-info); }
+.diff { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--color-border-secondary); }
+.dot.on { background: #EF9F27; }
+</style>
+
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab t1 active" onclick="sw(1)">Week 1 — 精准控色</button>
+    <button class="tab t2" onclick="sw(2)">Week 2 — 场景实战</button>
+    <button class="tab t3" onclick="sw(3)">Week 3 — 风格输出</button>
+  </div>
+
+  <div id="p1" class="phase-panel active">
+    <div class="ph-head h1">
+      <h2>Week 1 — 精准控色：把工具用到极限</h2>
+      <p>每天一个核心工具，直接做对比输出。目标：7天后能精确控制画面的任意一个色彩维度。</p>
+    </div>
+    <div class="days" id="d1"></div>
+  </div>
+  <div id="p2" class="phase-panel">
+    <div class="ph-head h2">
+      <h2>Week 2 — 场景实战：分类型系统出图</h2>
+      <p>人像 / 风光 / 建筑 / 夜景 / 视频，每天一个拍摄场景，形成完整的分类调色经验。</p>
+    </div>
+    <div class="days" id="d2"></div>
+  </div>
+  <div id="p3" class="phase-panel">
+    <div class="ph-head h3">
+      <h2>Week 3 — 风格输出：临摹 → 变形 → 自创</h2>
+      <p>从大师作品反推参数，打包预设和LUT，最终形成自己的签名色彩风格。</p>
+    </div>
+    <div class="days" id="d3"></div>
+  </div>
+</div>
+
+<script>
+const days = {
+  1: [
+    {
+      day:1, title:"曲线极限练习", sub:"RGB + 分通道 · 做出5种截然不同的情绪",
+      practice:"同一张素材，纯靠曲线做出：①高反差黑白 ②赛博橙蓝 ③褪色胶片 ④梦幻粉紫 ⑤日系低对比。禁止动其他任何面板。",
+      output:"5张对比图 + 每张记录曲线形状要点",
+      tool:"Lightroom / Photoshop Curves",
+      tip:"曲线压脚（抬起黑点）= 胶片感；分通道红上蓝下= 橙青"
+    },
+    {
+      day:2, title:"HSL 外科手术", sub:"只改一种颜色，其余不动",
+      practice:"找一张含天空+植物+皮肤的图。任务：① 天空从浅蓝→深蓝不影响其他 ② 树叶从绿→秋黄 ③ 肤色从偏黄→粉嫩。每步截图。",
+      output:"3组前后对比 + HSL面板截图",
+      tool:"Lightroom HSL",
+      tip:"饱和度和明度组合使用才能干净替换颜色，单改色相会跑"
+    },
+    {
+      day:3, title:"色调分离拆解", sub:"电影级阴影打色",
+      practice:"① 经典青橙：高光偏橙暖，阴影偏青冷 ② 日系：高光奶白，阴影偏绿 ③ 赛博朋克：高光品红，阴影深蓝 ④ 自己设计一组。4种全做完。",
+      output:"4张风格图，标注每种高光/阴影色相角度",
+      tool:"Lightroom 色调分离 / Split Toning",
+      tip:"饱和度不超过30，太重会像滤镜而不是调色"
+    },
+    {
+      day:4, title:"蒙版精确控制", sub:"局部和整体完全分开",
+      practice:"① 用线性渐变压暗天空同时不碰地面 ② 用主体检测蒙版单独处理人物 ③ 用画笔手动抠出一个复杂轮廓（如头发边缘）单独调色。",
+      output:"3组带蒙版叠加显示的截图 + 最终效果",
+      tool:"Lightroom 蒙版 / Photoshop 选区",
+      tip:"主体AI蒙版+反选=精准扣背景，比手画快10倍"
+    },
+    {
+      day:5, title:"达芬奇节点树搭建", sub:"理解节点逻辑，建标准流程",
+      practice:"搭一棵标准节点树：① Base grade（曝光还原）② Creative（风格化）③ Qualifier（限定器扣人物）④ Vignette（暗角）。每个节点只做一件事。",
+      output:"节点树截图 + 最终视频帧截图",
+      tool:"DaVinci Resolve",
+      tip:"节点树可以存为Power Grade，以后一键复用"
+    },
+    {
+      day:6, title:"Log素材还原+风格化", sub:"从灰片到成片完整流程",
+      practice:"找一段Log/FLAT素材（或手机电影模式），完整走：① 挂Input Transform还原 ② 调基础曝光 ③ 加创意色彩 ④ 导出对比帧。",
+      output:"还原帧 vs 风格化帧对比截图 + 节点结构",
+      tool:"DaVinci Resolve ACES / LUT",
+      tip:"没有Log素材可以用iPhone的Apple Log或免费样片包"
+    },
+    {
+      day:7, title:"Week 1 综合挑战", sub:"30分钟内完成一张完整商业风图",
+      practice:"计时挑战：找一张「问题素材」（欠曝/偏色/平淡），30分钟内用本周所有技术做出商业可用的成片。记录用时和思路。",
+      output:"原片 + 成片 + 150字调色思路说明",
+      tool:"Lightroom 全流程",
+      tip:"计时是为了逼出直觉，别追求完美"
+    },
+  ],
+  2: [
+    {
+      day:1, title:"人像调色", sub:"肤色保护 + 背景分离",
+      practice:"① 用肤色范围限定器单独调肤色，不影响背景 ② 背景降饱和突出人物 ③ 对比欧美棚拍风（高对比）vs 日系外拍风（低饱和）两种方向各做一张。",
+      output:"同一张原图 → 两种风格成片",
+      tool:"Lightroom 蒙版 + HSL",
+      tip:"肤色在HSL中主要落在「橙色」和「黄色」两个范围"
+    },
+    {
+      day:2, title:"风光调色", sub:"天空、植被、水体分层处理",
+      practice:"① 天空换色（不用换天，靠调色）② 植被从平到立体（HSL明度拉开层次）③ 水体加蓝绿通透感 ④ 尝试「国家地理」高饱和风 vs「底片」低对比风。",
+      output:"两种风格成片 + 重点步骤截图",
+      tool:"Lightroom / Capture One",
+      tip:"Capture One的肤色和颜色编辑比LR更精准，值得试"
+    },
+    {
+      day:3, title:"建筑/城市调色", sub:"高对比 + 材质感",
+      practice:"① 石材/混凝土：压低高光，拉细节，去色做黑白 ② 玻璃幕墙：蓝调冷峻 ③ 夜间商业街：橙色路灯 + 蓝色天空自然融合，不让橙蓝互相污染。",
+      output:"3张不同材质建筑调色成片",
+      tool:"Lightroom + Photoshop（黑白混色器）",
+      tip:"黑白调色中「橙色」控制皮肤和砖墙亮度，很关键"
+    },
+    {
+      day:4, title:"夜景/弱光调色", sub:"噪点控制 + 色彩平衡",
+      practice:"① 降噪后调色（顺序很重要，先降噪）② 路灯橙色偏色修正 ③ 故意保留橙蓝对比做电影感夜景 ④ 用色调分离给暗部加蓝紫氛围。",
+      output:"原始高ISO图 → 两种处理方向成片",
+      tool:"Lightroom / Topaz DeNoise",
+      tip:"降噪先于调色，调色会放大噪点的颜色"
+    },
+    {
+      day:5, title:"视频 · 短片调色", sub:"跨镜头色彩统一",
+      practice:"取3-5个不同时间/场景拍的镜头，目标：① 统一曝光 ② 统一色温 ③ 加统一风格LUT ④ 保证切换时不跳色。",
+      output:"Before/After对比剪辑片段（无需音乐，15秒内）",
+      tool:"DaVinci Resolve",
+      tip:"用Gallery Still截一个标准帧，其他镜头对着它做Match"
+    },
+    {
+      day:6, title:"黑白与单色调色", sub:"靠光影和质感说话",
+      practice:"① 黑白转换：用混色器控制各颜色的亮度，做出戏剧感 ② 加颗粒模拟胶片 ③ 深褐色/暗青色单色调 ④ 局部保留颜色（经典「红唇黑白」效果）。",
+      output:"4种处理效果截图",
+      tool:"Lightroom / Photoshop",
+      tip:"混色器中蓝色滑块控制天空亮度，橙色控制肤色亮度"
+    },
+    {
+      day:7, title:"Week 2 综合挑战", sub:"选一个最弱的场景类型，再做一次",
+      practice:"回看本周6天的输出，找最不满意的一天，重做一遍。要求比第一次明显提升，写出改进了什么。",
+      output:"第一版 vs 第二版对比 + 改进说明",
+      tool:"自选",
+      tip:"反复做同一个问题是进步最快的方式"
+    },
+  ],
+  3: [
+    {
+      day:1, title:"电影色调反推", sub:"拆解《银翼杀手2049》",
+      practice:"截取电影帧，用Photoshop取色分析：① 高光色相角度 ② 阴影色相角度 ③ 整体饱和度范围 ④ 曲线形状推测。然后在自己的素材上复刻。",
+      output:"色彩分析图 + 复刻成片",
+      tool:"Photoshop 吸管 + Lightroom",
+      tip:"可以用AI工具（如Palette.fm）辅助提取色板"
+    },
+    {
+      day:2, title:"胶片仿真精调", sub:"Kodak 400 vs Fuji 400H",
+      practice:"两种胶片风格各做一张：① Kodak：暖黄高光，阴影轻微绿，强颗粒 ② Fuji：冷蓝绿高光，阴影偏绿，细颗粒。对比两种胶片的「基因差异」。",
+      output:"两张对比图 + 参数记录",
+      tool:"Lightroom + VSCO参考",
+      tip:"VSCO的A系列≈Kodak，C系列≈Fuji，可作参数参考"
+    },
+    {
+      day:3, title:"自定义LUT制作", sub:"把风格打包成可复用文件",
+      practice:"在DaVinci中做好一个满意的风格，导出.cube LUT文件，导入Lightroom和Premiere验证效果一致，修正偏差后再次导出最终版。",
+      output:".cube文件 + 3种素材测试截图",
+      tool:"DaVinci Resolve LUT导出",
+      tip:"LUT在高饱和素材上容易「爆色」，需限制强度在50-70%"
+    },
+    {
+      day:4, title:"Lightroom预设打包", sub:"建立自己的预设库",
+      practice:"整理前两周最满意的调色，做成5个独立预设：① 人像通用 ② 风光通用 ③ 夜景 ④ 黑白 ⑤ 视频帧。每个预设在3张不同素材上测试适应性。",
+      output:"5个.xmp预设文件 + 测试对比图",
+      tool:"Lightroom 预设导出",
+      tip:"好的预设在不同素材上最多需要微调曝光，不应大幅修改"
+    },
+    {
+      day:5, title:"风格一致性挑战", sub:"10张图做出同一种感觉",
+      practice:"选10张素材（不同场景、时间、光线），目标：调完后放在一起像出自同一位摄影师之手。只能用你自己的预设+微调。",
+      output:"10张图拼成一个作品网格截图",
+      tool:"Lightroom 预设 + Bridge / Lightroom网格预览",
+      tip:"在网格视图中对比，不协调的图立刻显眼"
+    },
+    {
+      day:6, title:"批量调色效率练习", sub:"同步设置 + 自动化",
+      practice:"① 对100张同场景图批量同步设置 ② 写Lightroom导出预设（尺寸/格式/水印）③ 用DaVinci的Remote Grade跨时间线同步调色节点。",
+      output:"批量处理完成截图 + 导出文件夹截图",
+      tool:"Lightroom 同步 / DaVinci Remote Grade",
+      tip:"Remote Grade可以让修改自动同步到所有使用该Grade的片段"
+    },
+    {
+      day:7, title:"最终作品集", sub:"定义你的调色签名",
+      practice:"精选3周最佳作品8-12张/段，做成统一展示页面（可用HTML或Lightroom Web导出）。写一段200字「我的调色风格」，说清楚：偏好的色调方向、常用技术组合、适用场景。",
+      output:"作品集页面 + 风格说明文字",
+      tool:"自选展示工具",
+      tip:"能说清楚自己的风格，说明你真的形成了审美体系"
+    },
+  ]
+};
+
+const bc = ['bd1','bd2','bd3'];
+
+[1,2,3].forEach(ph => {
+  const c = document.getElementById('d'+ph);
+  days[ph].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'dc';
+    el.innerHTML = `
+      <div class="dc-top" onclick="tog(this.parentElement)">
+        <div class="badge ${bc[ph-1]}">D${(ph-1)*7+d.day}</div>
+        <div class="dc-info">
+          <div class="dc-title">${d.title}</div>
+          <div class="dc-sub">${d.sub}</div>
+        </div>
+        <span class="chev">▶</span>
+      </div>
+      <div class="dc-body">
+        <div class="row"><span class="lbl">练习</span><span class="val">${d.practice}</span></div>
+        <div class="row"><span class="lbl">产出</span><span class="val">${d.output} <span class="tag tag-out">存档</span></span></div>
+        <div class="row"><span class="lbl">工具</span><span class="val"><span class="tag tag-tool">${d.tool}</span></span></div>
+        <div class="row"><span class="lbl">技巧</span><span class="val"><span class="tag tag-tip">💡</span> ${d.tip}</span></div>
+      </div>
+    `;
+    c.appendChild(el);
+  });
+});
+
+function sw(p) {
+  [1,2,3].forEach(i => {
+    document.getElementById('p'+i).classList.toggle('active', i===p);
+    document.querySelectorAll('.tab')[i-1].classList.toggle('active', i===p);
+  });
+}
+function tog(el) { el.classList.toggle('open'); }
+</script>
